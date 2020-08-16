@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container"> 
+    <div class="messagesDiv">
+      <input type="number" id="user_id" placeholder="User ID" min="1">
+      <textarea name="message" id="body" cols="20" rows="3" placeholder="Write a message"></textarea>
+      
+      <button id="createMessageBtn">Create new message...</button>
+    </div>
+    <h1 id="messageHeading"></h1>
+    <ul id="messagesElement"></ul>
+  </div>
+  
+  <script type="text/javascript">
+    ;(async () => {
+      
+      const response = await fetch('http://localhost:4000/messages')
+      const messages = await response.json()
+      
+      for (let message of messages) {
+        const liElement = document.createElement('LI')
+        liElement.textContent = message.body
+        messagesElement.appendChild(liElement)
+      }
+      
+      createMessageBtn.onclick = async () => {
+        if (user_id.value.length && body.value.length) {
+          const response = await fetch('http://localhost:4000/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user_id: user_id.value,
+              body: body.value,
+            })
+          })
+          
+          const newMessage = await response.json()
+          
+          const liElement = document.createElement('LI')
+          liElement.textContent = newMessage.body
+          messagesElement.appendChild(liElement)
+        }
+        else {
+          messageHeading.textContent = 'Xatolik mavjud :('
+        }
+      }
+      
+    })()
+  </script>
+</body>
+</html>
